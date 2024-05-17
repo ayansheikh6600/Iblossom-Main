@@ -6,13 +6,7 @@ import { Progress, Space } from 'antd';
 import { Line } from '@ant-design/charts';
 import { EditOutlined, ClockCircleOutlined, SettingOutlined } from "@ant-design/icons"
 import dynamic from 'next/dynamic';
-const loadLineChart = async () => {
-    const module = await import('@ant-design/charts');
-    return module.Line;
-  };
-
-  const DynamicLineChart = dynamic(loadLineChart, { ssr: false });
-
+const DynamicLineChart = dynamic(() => import('@ant-design/charts').then(mod => mod.Line), { ssr: false })as typeof Line;
 
 
 let LineChart: any; // Define LineChart variable
