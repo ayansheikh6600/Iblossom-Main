@@ -210,9 +210,9 @@ export default function QuizQuestionCard({
     ? true
     : false
 
-  // console.log(quiz, 'quzzzzzzzzz')
+  console.log(quiz, 'quzzzzzzzzz')
 
-  const heading = quiz?.short_description.split(":")
+  // const heading = quiz?.short_description.split(":")
   // console.log(heading);
   
   return (
@@ -232,11 +232,12 @@ export default function QuizQuestionCard({
             submittedDefaultData={submittedDefaultData}
           />
         </div>
-        <h1 className="text-center font-bold">{heading[0]}</h1>
+        <div dangerouslySetInnerHTML={{ __html: quiz?.details }}/>
+        {/* <h1 className="text-center font-bold">{heading[0]}</h1>
         <p>
         <TextToSpeech text={(heading?.slice(1).toString())} />
           { heading?.slice(1)}  
-        </p>
+        </p> */}
         <div className="absolute right-4 top-0 p-">
           {submittedDefaultData?.singleQuiz ? (
             isCorrectAnswer ? (
