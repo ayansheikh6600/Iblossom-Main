@@ -211,6 +211,10 @@ export default function QuizQuestionCard({
     : false
 
   // console.log(quiz, 'quzzzzzzzzz')
+
+  const heading = quiz?.short_description.split(":")
+  // console.log(heading);
+  
   return (
     <div>
       <div key={quiz?._id} className={`my-4 w-full relative px-2 lg:pl-3 `}>
@@ -228,6 +232,11 @@ export default function QuizQuestionCard({
             submittedDefaultData={submittedDefaultData}
           />
         </div>
+        <h1 className="text-center font-bold">{heading[0]}</h1>
+        <p>
+        <TextToSpeech text={(heading?.slice(1).toString())} />
+          { heading?.slice(1)}  
+        </p>
         <div className="absolute right-4 top-0 p-">
           {submittedDefaultData?.singleQuiz ? (
             isCorrectAnswer ? (
