@@ -171,20 +171,20 @@ const AdminPage = () => {
                 <Menu>
                   <Menu.Item key="view">
                     <Link
-                      href={`/${userInfo?.role}/manage-users/all-users/details/${data}`}
+                      href={`/${userInfo?.role}/manage-users/all-users/details/${record._id}`}
                     >
                       View
                     </Link>
                   </Menu.Item>
                   <Menu.Item key="edit">
-                    <Link href={`/${userInfo?.role}/manage-users/all-users/edit/${data}`}>
+                    <Link href={`/${userInfo?.role}/manage-users/all-users/edit/${record._id}`}>
                       Edit
                     </Link>
                   </Menu.Item>
 
                   <Menu.Item
                     key="delete"
-                    onClick={() => deleteUserHandler(record)}
+                    onClick={() => deleteUserHandler(record._id)}
                   >
                     Delete
                   </Menu.Item>
