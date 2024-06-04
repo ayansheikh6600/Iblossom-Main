@@ -47,7 +47,7 @@ const StudentListCom = ({
   author,
 }: {
   setOpen: any;
-  author?: string;
+  author?: string | undefined;
 }) => {
   // const SUPER_ADMIN = USER_ROLE.ADMIN;
   const userInfo = getUserInfo() as any;
