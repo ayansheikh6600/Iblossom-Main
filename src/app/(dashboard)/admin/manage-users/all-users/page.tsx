@@ -21,36 +21,56 @@ import {
   Success_model,
   confirm_modal,
 } from "@/utils/modalHook";
+
 import { USER_ROLE } from "@/constants/role";
 import LoadingForDataFetch from "@/components/Utlis/LoadingForDataFetch";
-import StatusTag from "@/components/ui/CustomTag/StatusTag";
-import Image from "next/image";
-import ImageTag from "@/components/ui/CustomTag/ImageTag";
 import {
-  useDeleteUserMutation,
-  useGetAllUsersQuery,
-} from "@/redux/api/adminApi/usersApi";
-import dynamic from "next/dynamic";
+  useDeleteStudentMutation,
+  useGetAllStudentsQuery,
+} from "@/redux/api/adminApi/studentApi";
 import { getUserInfo } from "@/services/auth.service";
+import ModalComponent from "@/components/Modal/ModalComponents";
+import CreateStudentComponent from "@/components/student/addStudentByAuthor/addStudentComponent";
+import { ENUM_STATUS, ENUM_YN } from "@/constants/globalEnums";
+import Image from "next/image";
+import { AllImage } from "@/assets/AllImge";
+// import SellerAddPackageStudent from "../package/SellerAddPackageStudent";
+import {
+  useGetAllUsersQuery,
+  useUpdateUserMutation,
+} from "@/redux/api/adminApi/usersApi";
+import StatusTag from "@/components/ui/CustomTag/StatusTag";
+// import SellerDeactivedStudentPackage from "../package/SellerDeactiveStudentPackage";
 
-const AdminPage = () => {
-  // const userInfo?.role = USER_ROLE.ADMIN;
-  const userInfo = getUserInfo() as any
+const StudentListCom = ({
+  setOpen,
+  author,
+}: {
+  setOpen: any;
+  author?: string;
+}) => {
+  // const SUPER_ADMIN = USER_ROLE.ADMIN;
+  const userInfo = getUserInfo() as any;
   const query: Record<string, any> = {};
-  const [deleteUser] = useDeleteUserMutation();
+  const [updateStudent, { isLoading: updateUserLoading }] =
+    useUpdateUserMutation();
 
   const [page, setPage] = useState<number>(1);
   const [size, setSize] = useState<number>(10);
   const [sortBy, setSortBy] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [open, setOpen] = useState<boolean>(false);
-  const [adminId, setAdminId] = useState<string>("");
 
   query["limit"] = size;
   query["page"] = page;
   query["sortBy"] = sortBy;
   query["sortOrder"] = sortOrder;
+  query["sortOrder"] = sortOrder;
+  // query["status"] = ENUM_STATUS.ACTIVE;
+  query["isDelete"] = ENUM_YN.NO;
+  if (author) {
+    query["author"] = author;
+  }
 
   const debouncedSearchTerm = useDebounced({
     searchQuery: searchTerm,
@@ -60,42 +80,41 @@ const AdminPage = () => {
   if (!!debouncedSearchTerm) {
     query["searchTerm"] = debouncedSearchTerm;
   }
-  const { data = [], isLoading } = useGetAllUsersQuery({
+  const { data, isLoading } = useGetAllUsersQuery({
     ...query,
   });
 
-  //  // console.log("🚀 ~ file: page.tsx:58 ~ AdminPage ~ data:", data);
+  //@ts-ignore
+  const StudentData = data?.data;
 
   //@ts-ignore
-  const UserData = data?.data;
-  //  //  // console.log("🚀 ~ file: page.tsx:63 ~ AdminPage ~ UserData:", UserData);
-  //@ts-ignore
-  const meta = data?.data?.meta;
+  const meta = data?.meta;
 
   const columns = [
     {
-      title: "Profile",
-      width: 100,
+      width: 150,
       render: function (data: any) {
-        const img = data[data.role]["img"];
+        // console.log(data);
+        let img = `${data[data.role]?.img} `;
+        if (img === "undefined" || img === "undefined ") {
+          img = "";
+        }
+
         return (
           <>
-            {
-              <ImageTag
-                url={img}
-                width={100}
-                height={100}
-                style="w-[5rem] h-[2.8rem] rounded"
-                alt="dd"
-              />
-            }
+            <Image
+              src={img || AllImage.notFoundImage}
+              alt=""
+              width={500}
+              height={500}
+              className="w-16 h-16 rounded-full"
+            />
           </>
         );
       },
     },
     {
       title: "Name",
-      ellipsis: true,
       render: function (data: any) {
         let fullName = "";
         if (data?.role === USER_ROLE.ADMIN) {
@@ -115,7 +134,6 @@ const AdminPage = () => {
     },
     {
       title: "Email",
-      ellipsis: true,
       dataIndex: "email",
     },
     {
@@ -126,17 +144,10 @@ const AdminPage = () => {
         return <>{role}</>;
       },
     },
-    {
-      title: "Status",
-      width: 100,
-      render: function (data: any) {
-        const status = data?.status;
-        return <StatusTag status={status} />;
-      },
-    },
 
     {
       title: "Contact no.",
+      // dataIndex: "phoneNumber",
       render: function (data: any) {
         let Contact = "";
         if (data?.role === USER_ROLE.ADMIN) {
@@ -151,6 +162,16 @@ const AdminPage = () => {
         return <>{Contact}</>;
       },
     },
+    // {
+    //   title: "Date Of Birth",
+    //   // dataIndex: "dateOfBirth",
+    //   render: function (data: any) {
+    //     // console.log(data);
+    //     const date = `${data[data.role]?.dateOfBirth}   `;
+    //     return date && dayjs(date).format("MMMM D, YYYY");
+    //   },
+
+    // },
     {
       title: "Created at",
       dataIndex: "createdAt",
@@ -160,44 +181,64 @@ const AdminPage = () => {
       sorter: true,
     },
     {
-      title: "Action",
-      // fixed: "right",
+      title: "Status",
       width: 100,
-      render: (record: any) => (
-        <>
-          <Space size="middle">
-            <Dropdown
-              overlay={
-                <Menu>
-                  <Menu.Item key="view">
-                    <Link
-                      href={`/${userInfo?.role}/manage-users/all-users/details/${record._id}`}
-                    >
-                      View
-                    </Link>
-                  </Menu.Item>
-                  <Menu.Item key="edit">
-                    <Link href={`/${userInfo?.role}/manage-users/all-users/edit/${record._id}`}>
-                      Edit
-                    </Link>
-                  </Menu.Item>
-
-                  <Menu.Item
-                    key="delete"
-                    onClick={() => deleteUserHandler(record._id)}
-                  >
-                    Delete
-                  </Menu.Item>
-                </Menu>
-              }
-            >
-              <button className="text-blue-700">Action</button>
-            </Dropdown>
-          </Space>
-        </>
-      ),
+      render: function (data: any) {
+        const status = data?.status;
+        return <StatusTag status={status} />;
+      },
     },
+    {
+      title: "Action",
+      dataIndex: "_id",
+      width: 130,
+      render: function (id: string, data: any) {
+        return (
+          <>
+            <Space size="middle">
+              <Dropdown
+                overlay={
+                  <Menu>
+                    <Menu.Item key="details">
+                      <Link href={`/${userInfo?.role}/manage-users/all-users/details/${id}`}>
+                        View
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="edit">
+                      <Link href={`/${userInfo?.role}/manage-users/all-users/edit/${id}`}>
+                        Edit
+                      </Link>
+                    </Menu.Item>
 
+                    <Menu.Item
+                      key="delete"
+                      onClick={() => {
+                        handleDeactivate(id, data);
+                      }}
+                    >
+                      {data.status === ENUM_STATUS.ACTIVE
+                        ? "Deactivate"
+                        : "Active"}{" "}
+                      User
+                    </Menu.Item>
+                    {/* <ModalComponent buttonText="Add package">
+                      <SellerAddPackageStudent userId={id} />
+                    </ModalComponent>
+                    <p className="mt-1"></p>
+
+                    <ModalComponent buttonText="Package List">
+                      <SellerDeactivedStudentPackage userId={id} />
+                    </ModalComponent> */}
+                  </Menu>
+                }
+              >
+                <button className="text-blue-700">Action</button>
+              </Dropdown>
+            </Space>
+          </>
+        );
+      },
+    },
   ];
   const onPaginationChange = (page: number, pageSize: number) => {
     //  // console.log("Page:", page, "PageSize:", pageSize);
@@ -217,24 +258,34 @@ const AdminPage = () => {
     setSearchTerm("");
   };
 
-  const deleteUserHandler = async (id: string) => {
+  const handleDeactivate = async (id: string, data: any) => {
     console.log(id);
-    confirm_modal(`Are you sure you want to delete`).then(async (res) => {
-      if (res.isConfirmed) {
-        try {
-          const res = await deleteUser(id).unwrap();
-          if (res?.success == false) {
-            // message.success("Admin Successfully Deleted!");
-            // setOpen(false);
-            Error_model_hook(res?.message);
-          } else {
-            Success_model("Customer Successfully Deleted");
+    confirm_modal(`Are you sure you want to Update status`, "Yes").then(
+      async (res) => {
+        if (res.isConfirmed) {
+          try {
+            const res = await updateStudent({
+              id: id,
+              body: {
+                status:
+                  data?.status === ENUM_STATUS.ACTIVE
+                    ? ENUM_STATUS.DEACTIVATE
+                    : ENUM_STATUS.ACTIVE,
+              },
+            }).unwrap();
+            if (res?.success == false) {
+              // message.success("Admin Successfully Deleted!");
+              Error_model_hook(res?.message);
+            } else {
+              setOpen(false);
+              Success_model("Successfully Update Account status");
+            }
+          } catch (error: any) {
+            Error_model_hook(error.message);
           }
-        } catch (error: any) {
-          Error_model_hook(error.message);
         }
       }
-    });
+    );
   };
   // if (isLoading) {
   //   return <LoadingForDataFetch />;
@@ -249,9 +300,7 @@ const AdminPage = () => {
         padding: "1rem",
       }}
     >
-      <h1 className="text-center font-bold text-2xl">All User List</h1>
-      <hr />
-      <ActionBar>
+      <ActionBar title="Student List">
         <Input
           size="large"
           placeholder="Search"
@@ -261,9 +310,12 @@ const AdminPage = () => {
           }}
         />
         <div>
-          <Link href={`/${userInfo.role}/manage-users/all-users/create`}>
-            <Button type="primary">Create Customer</Button>
-          </Link>
+          {/* <Link href={`/${userInfo?.role}/manage-users/students/create`}>
+            <Button type="default">Create Student</Button>
+          </Link> */}
+          <ModalComponent buttonText="Create Student">
+            <CreateStudentComponent />
+          </ModalComponent>
           {(!!sortBy || !!sortOrder || !!searchTerm) && (
             <Button
               style={{ margin: "0px 5px" }}
@@ -279,7 +331,7 @@ const AdminPage = () => {
       <UMTable
         loading={isLoading}
         columns={columns}
-        dataSource={UserData}
+        dataSource={StudentData}
         pageSize={size}
         totalPages={meta?.total}
         showSizeChanger={true}
@@ -287,24 +339,8 @@ const AdminPage = () => {
         onTableChange={onTableChange}
         showPagination={true}
       />
-
-      <UMModal
-        title="Remove admin"
-        isOpen={open}
-        closeModal={() => setOpen(false)}
-        handleOk={() => deleteUserHandler(adminId)}
-      >
-        <p className="my-5">Do you want to remove this admin?</p>
-      </UMModal>
     </div>
   );
 };
 
-// export default AdminPage;
-
-// export default AdminPage;
-
-export default dynamic(() =>
-  Promise.resolve(AdminPage), {
-  ssr: false,
-})
+export default StudentListCom;
