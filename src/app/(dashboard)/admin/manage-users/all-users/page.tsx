@@ -1,13 +1,7 @@
 "use client";
-import React, { useState } from "react";
-import {
-  Button,
-  Dropdown,
-  Input,
-  Menu,
-  Space,
-  message,
-} from "antd";
+import ActionBar from "@/components/ui/ActionBar";
+import UMBreadCrumb from "@/components/ui/UMBreadCrumb";
+import { Button, Dropdown, Input, Menu, Space, message } from "antd";
 import Link from "next/link";
 import {
   DeleteOutlined,
@@ -16,32 +10,50 @@ import {
   ReloadOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
-import Image from "next/image";
-import dayjs from "dayjs";
-
-import ActionBar from "@/components/ui/ActionBar";
+import { useState } from "react";
+import { useDebounced } from "@/redux/hooks";
 import UMTable from "@/components/ui/UMTable";
+
+import dayjs from "dayjs";
 import UMModal from "@/components/ui/UMModal";
+import {
+  Error_model_hook,
+  Success_model,
+  confirm_modal,
+} from "@/utils/modalHook";
+
+import { USER_ROLE } from "@/constants/role";
+import LoadingForDataFetch from "@/components/Utlis/LoadingForDataFetch";
+import {
+  useDeleteStudentMutation,
+  useGetAllStudentsQuery,
+} from "@/redux/api/adminApi/studentApi";
+import { getUserInfo } from "@/services/auth.service";
 import ModalComponent from "@/components/Modal/ModalComponents";
 import CreateStudentComponent from "@/components/student/addStudentByAuthor/addStudentComponent";
-import StatusTag from "@/components/ui/CustomTag/StatusTag";
-import { AllImage } from "@/assets/AllImge";
-import { useDebounced } from "@/redux/hooks";
-import { useGetAllUsersQuery, useUpdateUserMutation } from "@/redux/api/adminApi/usersApi";
-import { getUserInfo } from "@/services/auth.service";
-import { Error_model_hook, Success_model, confirm_modal } from "@/utils/modalHook";
-import { USER_ROLE } from "@/constants/role";
 import { ENUM_STATUS, ENUM_YN } from "@/constants/globalEnums";
+import Image from "next/image";
+import { AllImage } from "@/assets/AllImge";
+// import SellerAddPackageStudent from "../package/SellerAddPackageStudent";
+import {
+  useGetAllUsersQuery,
+  useUpdateUserMutation,
+} from "@/redux/api/adminApi/usersApi";
+import StatusTag from "@/components/ui/CustomTag/StatusTag";
+// import SellerDeactivedStudentPackage from "../package/SellerDeactiveStudentPackage";
 
-interface StudentListComProps {
-  setOpen: (open: boolean) => void;
-  author?: string;
-}
-
-const AllUserListComp: React.FC<StudentListComProps> = ({ setOpen, author }) => {
+const AllUserListComp = ({
+  setOpen,
+  author,
+}: {
+  setOpen: any;
+  author?: string ;
+}) => {
+  // const SUPER_ADMIN = USER_ROLE.ADMIN;
   const userInfo = getUserInfo() as any;
   const query: Record<string, any> = {};
-  const [updateStudent, { isLoading: updateUserLoading }] = useUpdateUserMutation();
+  const [updateStudent, { isLoading: updateUserLoading }] =
+    useUpdateUserMutation();
 
   const [page, setPage] = useState<number>(1);
   const [size, setSize] = useState<number>(10);
@@ -53,6 +65,8 @@ const AllUserListComp: React.FC<StudentListComProps> = ({ setOpen, author }) => 
   query["page"] = page;
   query["sortBy"] = sortBy;
   query["sortOrder"] = sortOrder;
+  query["sortOrder"] = sortOrder;
+  // query["status"] = ENUM_STATUS.ACTIVE;
   query["isDelete"] = ENUM_YN.NO;
   if (author) {
     query["author"] = author;
@@ -63,11 +77,12 @@ const AllUserListComp: React.FC<StudentListComProps> = ({ setOpen, author }) => 
     delay: 600,
   });
 
-  if (debouncedSearchTerm) {
+  if (!!debouncedSearchTerm) {
     query["searchTerm"] = debouncedSearchTerm;
   }
-
-  const { data, isLoading } = useGetAllUsersQuery({ ...query });
+  const { data, isLoading } = useGetAllUsersQuery({
+    ...query,
+  });
 
   //@ts-ignore
   const StudentData = data?.data;
@@ -79,6 +94,7 @@ const AllUserListComp: React.FC<StudentListComProps> = ({ setOpen, author }) => 
     {
       width: 150,
       render: function (data: any) {
+        // console.log(data);
         let img = `${data[data.role]?.img} `;
         if (img === "undefined" || img === "undefined ") {
           img = "";
@@ -104,11 +120,14 @@ const AllUserListComp: React.FC<StudentListComProps> = ({ setOpen, author }) => 
         if (data?.role === USER_ROLE.ADMIN) {
           fullName = data?.admin?.name?.firstName + " " + data?.admin?.name?.lastName;
         } else if (data?.role === USER_ROLE.TRAINER) {
-          fullName = data?.trainer?.name?.firstName + " " + data?.trainer?.name?.lastName;
+          fullName =
+            data?.trainer?.name?.firstName + " " + data?.trainer?.name?.lastName;
         } else if (data?.role === USER_ROLE.SELLER) {
-          fullName = data?.seller?.name?.firstName + " " + data?.seller?.name?.lastName;
+          fullName =
+            data?.seller?.name?.firstName + " " + data?.seller?.name?.lastName;
         } else if (data?.role === USER_ROLE.STUDENT) {
-          fullName = data?.student?.name?.firstName + " " + data?.student?.name?.lastName;
+          fullName =
+            data?.student?.name?.firstName + " " + data?.student?.name?.lastName;
         }
         return <p className="">{fullName}</p>;
       },
@@ -125,8 +144,10 @@ const AllUserListComp: React.FC<StudentListComProps> = ({ setOpen, author }) => 
         return <>{role}</>;
       },
     },
+
     {
       title: "Contact no.",
+      // dataIndex: "phoneNumber",
       render: function (data: any) {
         let Contact = "";
         if (data?.role === USER_ROLE.ADMIN) {
@@ -141,6 +162,16 @@ const AllUserListComp: React.FC<StudentListComProps> = ({ setOpen, author }) => 
         return <>{Contact}</>;
       },
     },
+    // {
+    //   title: "Date Of Birth",
+    //   // dataIndex: "dateOfBirth",
+    //   render: function (data: any) {
+    //     // console.log(data);
+    //     const date = `${data[data.role]?.dateOfBirth}   `;
+    //     return date && dayjs(date).format("MMMM D, YYYY");
+    //   },
+
+    // },
     {
       title: "Created at",
       dataIndex: "createdAt",
@@ -178,14 +209,26 @@ const AllUserListComp: React.FC<StudentListComProps> = ({ setOpen, author }) => 
                         Edit
                       </Link>
                     </Menu.Item>
+
                     <Menu.Item
                       key="delete"
                       onClick={() => {
                         handleDeactivate(id, data);
                       }}
                     >
-                      {data.status === ENUM_STATUS.ACTIVE ? "Deactivate" : "Active"} User
+                      {data.status === ENUM_STATUS.ACTIVE
+                        ? "Deactivate"
+                        : "Active"}{" "}
+                      User
                     </Menu.Item>
+                    {/* <ModalComponent buttonText="Add package">
+                      <SellerAddPackageStudent userId={id} />
+                    </ModalComponent>
+                    <p className="mt-1"></p>
+
+                    <ModalComponent buttonText="Package List">
+                      <SellerDeactivedStudentPackage userId={id} />
+                    </ModalComponent> */}
                   </Menu>
                 }
               >
@@ -197,14 +240,14 @@ const AllUserListComp: React.FC<StudentListComProps> = ({ setOpen, author }) => 
       },
     },
   ];
-
   const onPaginationChange = (page: number, pageSize: number) => {
+    //  // console.log("Page:", page, "PageSize:", pageSize);
     setPage(page);
     setSize(pageSize);
   };
-
   const onTableChange = (pagination: any, filter: any, sorter: any) => {
     const { order, field } = sorter;
+    // console.log(order, field);
     setSortBy(field as string);
     setSortOrder(order === "ascend" ? "asc" : "desc");
   };
@@ -216,21 +259,26 @@ const AllUserListComp: React.FC<StudentListComProps> = ({ setOpen, author }) => 
   };
 
   const handleDeactivate = async (id: string, data: any) => {
-    confirm_modal(`Are you sure you want to update status`, "Yes").then(
+    console.log(id);
+    confirm_modal(`Are you sure you want to Update status`, "Yes").then(
       async (res) => {
         if (res.isConfirmed) {
           try {
             const res = await updateStudent({
               id: id,
               body: {
-                status: data?.status === ENUM_STATUS.ACTIVE ? ENUM_STATUS.DEACTIVATE : ENUM_STATUS.ACTIVE,
+                status:
+                  data?.status === ENUM_STATUS.ACTIVE
+                    ? ENUM_STATUS.DEACTIVATE
+                    : ENUM_STATUS.ACTIVE,
               },
             }).unwrap();
             if (res?.success == false) {
+              // message.success("Admin Successfully Deleted!");
               Error_model_hook(res?.message);
             } else {
               setOpen(false);
-              Success_model("Successfully updated account status");
+              Success_model("Successfully Update Account status");
             }
           } catch (error: any) {
             Error_model_hook(error.message);
@@ -239,17 +287,20 @@ const AllUserListComp: React.FC<StudentListComProps> = ({ setOpen, author }) => 
       }
     );
   };
-
+  // if (isLoading) {
+  //   return <LoadingForDataFetch />;
+  // }
   return (
     <div
       style={{
-        boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+        boxShadow:
+          "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
         borderRadius: "1rem",
         backgroundColor: "white",
         padding: "1rem",
       }}
     >
-      <ActionBar title="Student List">
+      <ActionBar title="Users List">
         <Input
           size="large"
           placeholder="Search"
@@ -259,11 +310,18 @@ const AllUserListComp: React.FC<StudentListComProps> = ({ setOpen, author }) => 
           }}
         />
         <div>
-          <ModalComponent buttonText="Create Student">
+          {/* <Link href={`/${userInfo?.role}/manage-users/students/create`}>
+            <Button type="default">Create Student</Button>
+          </Link> */}
+          <ModalComponent buttonText="Create User">
             <CreateStudentComponent />
           </ModalComponent>
           {(!!sortBy || !!sortOrder || !!searchTerm) && (
-            <Button style={{ margin: "0px 5px" }} type="default" onClick={resetFilters}>
+            <Button
+              style={{ margin: "0px 5px" }}
+              type="default"
+              onClick={resetFilters}
+            >
               <ReloadOutlined />
             </Button>
           )}
