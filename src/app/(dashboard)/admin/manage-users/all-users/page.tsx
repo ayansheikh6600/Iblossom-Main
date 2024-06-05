@@ -38,7 +38,7 @@ interface StudentListComProps {
   author?: string;
 }
 
-const StudentListCom: React.FC<StudentListComProps> = ({ setOpen, author }) => {
+const AllUserListComp: React.FC<StudentListComProps> = ({ setOpen, author }) => {
   const userInfo = getUserInfo() as any;
   const query: Record<string, any> = {};
   const [updateStudent, { isLoading: updateUserLoading }] = useUpdateUserMutation();
@@ -285,4 +285,4 @@ const StudentListCom: React.FC<StudentListComProps> = ({ setOpen, author }) => {
   );
 };
 
-export default StudentListCom;
+export default AllUserListComp;
