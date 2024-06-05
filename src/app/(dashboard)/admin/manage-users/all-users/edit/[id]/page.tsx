@@ -13,6 +13,7 @@ import UploadImage from "@/components/ui/UploadImage";
 import { bloodGroupOptions, genderOptions } from "@/constants/global";
 import { removeNullUndefinedAndFalsey } from "@/hooks/removeNullUndefinedAndFalsey";
 import { useGetAllCategoryQuery } from "@/redux/api/adminApi/categoryApi";
+import { USER_ROLE } from "@/constants/role";
 import {
   useGetSingleUserQuery,
   useUpdateUserMutation
@@ -22,12 +23,22 @@ import { Error_model_hook, Success_model } from "@/utils/modalHook";
 
 import { Button, Col, Row, message } from "antd";
 import Image from "next/image";
+import {
+  useGetSingleStudentQuery,
+  useUpdateStudentMutation,
+} from "@/redux/api/adminApi/studentApi";
 
 const EditUserData = ({ params }: any) => {
   const { data: userData, isLoading } = useGetSingleUserQuery(params?.id);
   const { data: categoryData = [] } = useGetAllCategoryQuery({});
   const [updateUser, { isLoading: updateLoading, error }] =
   useUpdateUserMutation();
+
+  (()=>{
+    const [updateStudent, { isLoading: updateLoading, error }] =
+        useUpdateStudentMutation();
+  })()
+ 
 
   const onSubmit = async (values: any) => {
     const UpdateValues = {
@@ -38,6 +49,21 @@ const EditUserData = ({ params }: any) => {
 
     console.log(UpdateValues, "dfghtyfgh")
     try {
+
+      if(UpdateValues.role == USER_ROLE.STUDENT){
+        
+        // const res = await updateStudent({
+        //   id: id,
+        //   data: UpdateValues,
+        // }).unwrap();
+        // console.log(res);
+        // if (res?.success == false) {
+        //   Error_model_hook(res?.message);
+        // } else {
+        //   Success_model("successfully updated data");
+        // }
+      }
+
       const res = await updateUser({
         id: params?.id,
         data: UpdateValues,
@@ -75,6 +101,8 @@ const EditUserData = ({ params }: any) => {
     bloodGroup: userData[userData?.role]?.bloodGroup || "", // Optional blood group
     address: userData[userData?.role]?.address || "",
     img: userData[userData?.role]?.img || "",
+    role:userData?.role,
+    stdID : userData[userData?.role]?.id
   };
 
   return (
