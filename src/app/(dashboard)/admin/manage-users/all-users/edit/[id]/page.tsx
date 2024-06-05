@@ -27,6 +27,9 @@ import {
   useGetSingleStudentQuery,
   useUpdateStudentMutation,
 } from "@/redux/api/adminApi/studentApi";
+import {
+  useUpdateSellerMutation,
+} from "@/redux/api/adminApi/sellerApi";
 
 const EditUserData = ({ params }: any) => {
   const { data: userData, isLoading } = useGetSingleUserQuery(params?.id);
@@ -34,10 +37,11 @@ const EditUserData = ({ params }: any) => {
   const [updateUser, { isLoading: updateLoading, error }] =
   useUpdateUserMutation();
 
-  (()=>{
-    const [updateStudent, { isLoading: updateLoading, error }] =
+    const [updateStudent, { isLoading: updateStdLoading }] =
         useUpdateStudentMutation();
-  })()
+    const [updateSeller, { isLoading: updateSellLoading }] =
+    useUpdateStudentMutation();
+
  
 
   const onSubmit = async (values: any) => {
@@ -52,28 +56,32 @@ const EditUserData = ({ params }: any) => {
 
       if(UpdateValues.role == USER_ROLE.STUDENT){
         
-        // const res = await updateStudent({
-        //   id: id,
-        //   data: UpdateValues,
-        // }).unwrap();
-        // console.log(res);
-        // if (res?.success == false) {
-        //   Error_model_hook(res?.message);
-        // } else {
-        //   Success_model("successfully updated data");
-        // }
+        const res = await updateStudent({
+          id: UpdateValues?.stdID,
+          data: UpdateValues,
+        }).unwrap();
+        console.log(res);
+        if (res?.success == false) {
+          Error_model_hook(res?.message);
+        } else {
+          Success_model("successfully updated data");
+        }
+      }else if(
+        UpdateValues.role == USER_ROLE.SELLER
+      ){
+        const res = await updateSeller({
+          id: UpdateValues?.stdID,
+          data: UpdateValues,
+        }).unwrap();
+        console.log(res, "ghjbnhj");
+        if (res?.success == false) {
+          Error_model_hook(res?.message);
+        } else {
+          Success_model("successfully updated data");
+        }
       }
 
-      const res = await updateUser({
-        id: params?.id,
-        data: UpdateValues,
-      }).unwrap();
-      console.log(res, "ghjbnhj");
-      if (res?.success == false) {
-        Error_model_hook(res?.message);
-      } else {
-        Success_model("successfully updated data");
-      }
+      
     } catch (err: any) {
       console.error(err);
       Error_model_hook(err?.message || err?.data)
@@ -86,7 +94,7 @@ const EditUserData = ({ params }: any) => {
     console.log(error);
   }
   
-  // console.log(userData);
+  console.log(userData);
   
 
   const defaultValues = {
