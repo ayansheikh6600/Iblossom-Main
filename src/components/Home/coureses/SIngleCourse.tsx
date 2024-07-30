@@ -119,6 +119,16 @@ const SIngleCourse = ({ course }: { course: ICourseData }) => {
                 </div>
               </a>
               <Link
+                href={`/comingsoon`}
+                className=""
+              >
+                <h3 className="text-black text-center text-[16px]">
+                  <EllipsisMiddle suffixCount={3} maxLength={90}>
+                    {course?.title}
+                  </EllipsisMiddle>
+                </h3>
+              </Link>
+              {/* <Link
                 href={`/course/milestone/${course?._id}?categoryName=${
                   course?.category?.title
                 }&courseName=${course?.title}&category=${
@@ -131,7 +141,7 @@ const SIngleCourse = ({ course }: { course: ICourseData }) => {
                     {course?.title}
                   </EllipsisMiddle>
                 </h3>
-              </Link>
+              </Link> */}
             </div>
           </div>
 
@@ -158,7 +168,7 @@ const SIngleCourse = ({ course }: { course: ICourseData }) => {
               onClick={() => {
                 console.log("first");
                 router.push(
-                  `/payment/checkout/${course?._id}?categoryId=${course?.category}`
+                  `/comingsoon`
                 );
               }}
               type="default"
@@ -173,6 +183,26 @@ const SIngleCourse = ({ course }: { course: ICourseData }) => {
             >
               Enroll Now
             </Button>
+            {/* <Button
+              // href= {`/payment/checkout/${course?._id}?categoryId=${course?.category}`}
+              onClick={() => {
+                console.log("first");
+                router.push(
+                  `/payment/checkout/${course?._id}?categoryId=${course?.category}`
+                );
+              }}
+              type="default"
+              style={{
+    
+                borderBottomRightRadius: "0.5rem",
+                borderBottomLeftRadius: "0.5rem",
+                paddingTop: "14px",
+                paddingBottom: "14px",
+              }}
+              className="bg-blue-600 cursor-pointer hover:text-blue-600  text-center flex justify-center items-center font-semibold w-full text-white text-lg   "
+            >
+              Enroll Now
+            </Button> */}
           </div>
         </div>
       </div>

@@ -35,7 +35,7 @@ const CoursesTab = () => {
 
   const query: Record<string, any> = {};
   query["status"] = ENUM_STATUS.ACTIVE;
-  query["limit"] = 6;
+  query["limit"] = 99999;
   query["sortOrder"] = ENUM_SORT_ORDER.ASC;
   query["sortBy"] = "serial_number";
   query["isDelete"] = ENUM_YN.NO;
@@ -102,7 +102,7 @@ const CoursesTab = () => {
   };
 
   return (
-    <div className="  bg-white px-2">
+    <div className="  bg-white ">
 
       {/* <div className="container mx-auto  py-2 px-2 my-6 flex justify-between items-center ">
         <h2 className="flex flex-col font-bold text-sm md:text-md lg:text-lg 2xl:text-4xl text-gray-700 whitespace-nowrap">

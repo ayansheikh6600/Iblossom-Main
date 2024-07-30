@@ -94,7 +94,7 @@ export default function LearningMain() {
     isLoading,
     error,
   } = useGetAllCourseQuery({ ...courseQuery }) as any;
-  // console.log("🚀 ~ LearningMain ~ courseAllData:", courseAllData);
+  console.log("🚀 ~ LearningMain ~ courseAllData:", courseAllData);
 
   if (error || categoryLevelError) {
     console.log(error, categoryLevelError);
@@ -181,17 +181,17 @@ export default function LearningMain() {
           <div className="flex lg:hidden md:hidden xl:hidden absolute -top-8 lg:top-0 left-0  ">
             {/* <PaypalCheckoutByCourse courseData={courseFirstData} /> */}
 
-            {/* <button
+            <button
               onClick={() => showModal(categoryId)}
               className="uppercase inline-flex items-center gap-1 p-1 rounded-md text:lg md:text-2xl text-[#1C3052] text-center font-bold"
             >
               {" "}
               <IoIosArrowDropdown /> Level
-            </button> */}
+            </button>
           </div>
           <div className="items-start mt-3 lg:mt-5 md:mt-3 xl:mt-7">
             {/*//! label section */}
-            <div className="flex flex-col w-full">
+            <div className="hidden  lg:flex flex-col w-full">
               <div className="flex relative flex-col justify-self-start gap-3 mt-3 w-full mr-2 ">
                 <hr />
                 {courseLevelData?.data?.map(

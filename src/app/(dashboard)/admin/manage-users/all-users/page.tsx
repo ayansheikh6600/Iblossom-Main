@@ -47,11 +47,10 @@ const AdminPage = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [adminId, setAdminId] = useState<string>("");
 
-  // query["limit"] = size;
-  // query["page"] = page;
-  // query["sortBy"] = sortBy;
-  // query["sortOrder"] = sortOrder;
-  // query["sortOrder"] = sortOrder;
+  query["limit"] = size;
+  query["page"] = page;
+  query["sortBy"] = sortBy;
+  query["sortOrder"] = sortOrder;
 
   const debouncedSearchTerm = useDebounced({
     searchQuery: searchTerm,
@@ -61,11 +60,11 @@ const AdminPage = () => {
   if (!!debouncedSearchTerm) {
     query["searchTerm"] = debouncedSearchTerm;
   }
-  const { data, isLoading } = useGetAllUsersQuery({
+  const { data = [], isLoading } = useGetAllUsersQuery({
     ...query,
   });
 
-   console.log("🚀 ~ file: page.tsx:58 ~ AdminPage ~ data:", data);
+  //  // console.log("🚀 ~ file: page.tsx:58 ~ AdminPage ~ data:", data);
 
   //@ts-ignore
   const UserData = data?.data;
@@ -172,20 +171,20 @@ const AdminPage = () => {
                 <Menu>
                   <Menu.Item key="view">
                     <Link
-                      href={`/${userInfo?.role}/manage-users/all-users/details/${record._id}`}
+                      href={`/${userInfo?.role}/manage-users/all-users/details/${data}`}
                     >
                       View
                     </Link>
                   </Menu.Item>
                   <Menu.Item key="edit">
-                    <Link href={`/${userInfo?.role}/manage-users/all-users/edit/${record._id}`}>
+                    <Link href={`/${userInfo?.role}/manage-users/all-users/edit/${data}`}>
                       Edit
                     </Link>
                   </Menu.Item>
 
                   <Menu.Item
                     key="delete"
-                    onClick={() => deleteUserHandler(record._id)}
+                    onClick={() => deleteUserHandler(record)}
                   >
                     Delete
                   </Menu.Item>

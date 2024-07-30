@@ -33,7 +33,7 @@ export const axiosBaseQuery =
         method,
         data,
         params,
-        timeout : 300000,
+        timeout : 240000,
         headers: {
           "Content-Type": contentType || "application/json",
         },

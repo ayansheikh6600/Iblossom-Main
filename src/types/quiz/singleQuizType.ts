@@ -31,8 +31,6 @@ export type ISingleQuizData = {
   lesson: string;
   time_duration:number;
   quizData:{link:string};
-  short_description: string;
-  details: string;
   quiz: {
     _id: string;
     title: string;

@@ -37,12 +37,10 @@ const UserCreateComponent = ({
     useAddSellerWithFormDataMutation();
 
   const onSubmit = async (values: any) => {
-
-    
     removeNullUndefinedAndFalsey(values);
     try {
       let res;
-      if (values.role === USER_ROLE.ADMIN) {
+      if (role.value === USER_ROLE.ADMIN) {
         const { password, ...allValue } = values;
         const modifyValue = {
           password: password,
@@ -50,21 +48,21 @@ const UserCreateComponent = ({
         };
 
         res = await addAdminUserWithFormData({ ...modifyValue }).unwrap();
-      } else if (values.role === USER_ROLE.STUDENT) {
+      } else if (role.value === USER_ROLE.STUDENT) {
         const { password, ...allValue } = values;
         const modifyValue = {
           password: password,
           [USER_ROLE.STUDENT]: { ...allValue },
         };
         res = await addStudentUserWithFormData({ ...modifyValue }).unwrap();
-      } else if (values.role === USER_ROLE.SELLER) {
+      } else if (role.value === USER_ROLE.SELLER) {
         const { password, ...allValue } = values;
         const modifyValue = {
           password: password,
           [USER_ROLE.SELLER]: { ...allValue },
         };
         res = await addSellerUserWithFormData({ ...modifyValue }).unwrap();
-      } else if (values.role === USER_ROLE.TRAINER) {
+      } else if (role.value === USER_ROLE.TRAINER) {
         const { password, ...allValue } = values;
         const modifyValue = {
           password: password,

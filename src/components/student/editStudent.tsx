@@ -17,8 +17,6 @@ import {
   useUpdateStudentMutation,
 } from "@/redux/api/adminApi/studentApi";
 
-// import {}
-
 
 import { Error_model_hook, Success_model } from "@/utils/modalHook";
 
@@ -31,7 +29,7 @@ const EditStudentComponent = ({ id }: { id: string }) => {
   });
   const studentData = singleStudent;
 
-  console.log(studentData, id);
+  // console.log(studentData, "student data");
 
   const [updateStudent, { isLoading: updateLoading, error }] =
     useUpdateStudentMutation();
@@ -154,7 +152,7 @@ const EditStudentComponent = ({ id }: { id: string }) => {
                 }}
               >
                 <FormInput
-                   type="text"
+                   type="number"
                   name="phoneNumber"
                   size="large"
                   label="Phone Number"

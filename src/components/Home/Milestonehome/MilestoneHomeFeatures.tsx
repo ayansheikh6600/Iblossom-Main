@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useGetAllMilestoneQuery } from "@/redux/api/adminApi/milestoneApi";
 import { useGetAllCourseQuery } from "@/redux/api/adminApi/courseApi";
 import { useGetAllCategoryChildrenQuery } from "@/redux/api/categoryChildrenApi";
-import { useGetAllCategoryQuery } from "@/redux/api/adminApi/categoryApi";
 
 export default function MilestoneHomeFeatures() {
   const milestoneData = {
@@ -59,7 +58,7 @@ export default function MilestoneHomeFeatures() {
   const [size, setSize] = useState<boolean>(false);
   const [showAllCourses, setShowAllCourses] = useState(false);
 
-  query["limit"] = 5;
+  query["limit"] = 4;
   query["children"] = "course";
   query["sortBy"] = "serial_number";
   query["sortOrder"] = "asc";
@@ -68,7 +67,7 @@ export default function MilestoneHomeFeatures() {
   if (size) {
     query["limit"] = 999999;
   } else {
-    query["limit"] = 5;
+    query["limit"] = 4;
   }
 
   const [claseAcctive, setClaseAcctive] = useState(
@@ -107,7 +106,8 @@ export default function MilestoneHomeFeatures() {
                     fill="#FB8500"
                   />
                 </svg>
-                <Link href={`/course/milestone/${item?._id}?category=${course?.course?._id}`}><h2 className="text-lg">{item.title}</h2></Link>
+                {/* <Link href={`/course/milestone/${item?._id}?category=${course?.course?._id}`}><h2 className="text-lg">{item.title}</h2></Link> */}
+                <Link href={`/comingsoon`}><h2 className="text-lg">{item.title}</h2></Link>
               </div>
               
             );
@@ -122,7 +122,7 @@ export default function MilestoneHomeFeatures() {
   const { data = {}, isLoading } = useGetAllCategoryChildrenQuery({
     ...query,
   }) as any;
-  console.log("🚀 ~ MilestoneHomeFeatures ~ data:", data.data);
+  // console.log("🚀 ~ MilestoneHomeFeatures ~ data:", data.data);
   // setActiveTabKey(data?.data[0])
 
   // setClaseAcctive(data?.data && data?.data[0].title)
@@ -142,7 +142,7 @@ export default function MilestoneHomeFeatures() {
       <hr />
       <div className="container mx-auto">
         <div className="md:w-[90] mx-auto py-5">
-          <ul className="flex gap-10 list-none items-center overflow-x-scroll">
+          <ul className="flex gap-16 list-none items-center">
             {data?.data &&
               data?.data?.map((category: any, index: number) => {
                 return (
@@ -153,7 +153,7 @@ export default function MilestoneHomeFeatures() {
                       claseAcctive == category.title
                         ? activeClass
                         : inactiveClass
-                    } cursor-pointer min-w-fit p-1 mb-2`}
+                    } p-1 cursor-pointer`}
                   >
                     {category.title}
                   </li>
