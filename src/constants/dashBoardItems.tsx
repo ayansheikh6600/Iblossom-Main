@@ -438,6 +438,35 @@ export const dashboardItems = (role: string, setCollapsed?: any) => {
       ],
     },
     {
+      label: "Home Video Upload",
+      key: "Home-Video-Upload",
+      icon: <GiJetPack />,
+      children: [
+        {
+          label: (
+            <Link
+              onClick={() => (setCollapsed ? setCollapsed(false) : null)}
+              href={`/${role}/homevideo/create`}
+            >
+              Upload Video
+            </Link>
+          ),
+          key: `/${role}/homevideo/create`,
+        },
+        {
+          label: (
+            <Link
+              onClick={() => (setCollapsed ? setCollapsed(false) : null)}
+              href={`/${role}/homevideo`}
+            >
+              Video List
+            </Link>
+          ),
+          key: `/${role}/homevideo`,
+        },
+      ],
+    },
+    {
       label: "Manage Package",
       key: "Manage-Package",
       icon: <GiJetPack />,
